@@ -1,8 +1,26 @@
+"use client";
+
+import Image from "next/image";
+import { useAuthStore } from "@/features/auth/store";
+import { getProfileVisual } from "@/lib/profile-visuals";
+
 export function ComposerCard() {
+  const session = useAuthStore((state) => state.session);
+  const visual = getProfileVisual(session?.profileSlug, session?.role);
+
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-slate-300" />
+        <div className="h-10 w-10 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+          <Image
+            src={visual.avatarUrl}
+            alt={`Avatar de ${session?.name ?? "utilizador"}`}
+            width={40}
+            height={40}
+            unoptimized
+            className="h-full w-full object-cover"
+          />
+        </div>
         <button className="w-full rounded-full border border-slate-300 px-4 py-2 text-left text-sm text-slate-500 transition hover:bg-slate-50">
           Publica teu progresso, notas, concursos ou conquistas
         </button>

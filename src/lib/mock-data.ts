@@ -40,6 +40,23 @@ export type SuggestedStudentProfile = {
   lastUpdate: string;
 };
 
+export type OfferApplicantStatus =
+  | "Nova"
+  | "Em análise"
+  | "Entrevista"
+  | "Rejeitada";
+
+export type OfferApplicant = {
+  id: string;
+  name: string;
+  course: string;
+  university: string;
+  offerTitle: string;
+  appliedAt: string;
+  status: OfferApplicantStatus;
+  profileSlug: string;
+};
+
 export const impactStats = [
   { label: "Estudantes conectados", value: 4200, suffix: "+" },
   { label: "Empresas parceiras", value: 180, suffix: "+" },
@@ -187,5 +204,48 @@ export const suggestedStudentProfiles: SuggestedStudentProfile[] = [
     skills: ["Redes", "Linux", "Cloud"],
     progressScore: 74,
     lastUpdate: "Partilhou certificação de redes",
+  },
+];
+
+export const offerApplicants: OfferApplicant[] = [
+  {
+    id: "cand-1",
+    name: "Joisson Miguel",
+    course: "Engenharia Informática",
+    university: "ISPTEC",
+    offerTitle: "Frontend Intern",
+    appliedAt: "12 Abr, 2026",
+    status: "Em análise",
+    profileSlug: "joisson-miguel",
+  },
+  {
+    id: "cand-2",
+    name: "Ana Paula Fernandes",
+    course: "Ciência de Dados",
+    university: "Universidade Agostinho Neto",
+    offerTitle: "Data Analyst Intern",
+    appliedAt: "11 Abr, 2026",
+    status: "Nova",
+    profileSlug: "ana-paula-fernandes",
+  },
+  {
+    id: "cand-3",
+    name: "Carlos Mateus",
+    course: "Engenharia de Telecomunicações",
+    university: "ISPTEC",
+    offerTitle: "Social Media Intern",
+    appliedAt: "10 Abr, 2026",
+    status: "Entrevista",
+    profileSlug: "carlos-mateus",
+  },
+  {
+    id: "cand-4",
+    name: "Marta Silva",
+    course: "Marketing Digital",
+    university: "Universidade de Luanda",
+    offerTitle: "Social Media Intern",
+    appliedAt: "08 Abr, 2026",
+    status: "Rejeitada",
+    profileSlug: "ana-paula-fernandes",
   },
 ];

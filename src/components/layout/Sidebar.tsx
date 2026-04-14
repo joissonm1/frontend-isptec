@@ -8,6 +8,7 @@ import {
   Library,
   Presentation,
   Rocket,
+  UserCheck,
   Users,
   Settings,
 } from "lucide-react";
@@ -63,6 +64,11 @@ export function Sidebar() {
             href: "/empresa/perfis",
             name: "Talentos",
             icon: <Users className="h-4 w-4" />,
+          },
+          {
+            href: "/empresa/candidaturas",
+            name: "Candidatos",
+            icon: <UserCheck className="h-4 w-4" />,
           },
         ]
       : [];
