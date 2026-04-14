@@ -27,18 +27,18 @@ export const mockUsers: Array<AuthSession & { password: string }> = [
     profileSlug: "joisson-miguel",
   },
   {
-    name: "Prof. Ana Gomes",
+    name: "Paulo Carvalho",
     email: "professor@unibridge.ao",
     password: "123456",
     role: "professor",
-    profileSlug: "ana-gomes",
+    profileSlug: "paulo-carvalho",
   },
   {
-    name: "NexaTech RH",
+    name: "Enapp",
     email: "empresa@unibridge.ao",
     password: "123456",
     role: "company",
-    profileSlug: "nexatech",
+    profileSlug: "enapp",
   },
   {
     name: "ISPTEC",
