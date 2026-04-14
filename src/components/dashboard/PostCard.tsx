@@ -16,16 +16,16 @@ export function PostCard({ post }: PostCardProps) {
     <article className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-slate-900">{post.author}</h3>
+          <h3 className="font-semibold text-slate-900">{post.author}</h3>
           <p className="text-xs text-slate-500">
             {post.role} • {post.time}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700">
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700">
             {roleLabel}
           </span>
-          <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-bold text-cyan-700">
+          <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700">
             {post.category}
           </span>
         </div>
