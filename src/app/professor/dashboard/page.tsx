@@ -1,8 +1,49 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { suggestedStudentProfiles } from "@/lib/mock-data";
+import { api, apiMappers } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
 
 export default function ProfessorDashboardPage() {
+  const [students, setStudents] = useState(suggestedStudentProfiles);
+  const [loading, setLoading] = useState(true);
+  const session = useAuthStore((state) => state.session);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      try {
+        const response = await api.students.list(session?.token ?? null);
+        const data = Array.isArray(response.data)
+          ? response.data
+          : (response.data?.data ?? []);
+        const normalized = data.map(apiMappers.normalizeStudentProfile);
+        if (active) {
+          setStudents(
+            normalized.length ? normalized : suggestedStudentProfiles,
+          );
+        }
+      } catch (error) {
+        if (active) {
+          setStudents(suggestedStudentProfiles);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [session?.token]);
+
   return (
     <AppShell>
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -40,44 +81,52 @@ export default function ProfessorDashboardPage() {
           Atualizar progresso dos estudantes
         </h2>
         <div className="mt-4 space-y-4">
-          {suggestedStudentProfiles.map((student) => (
-            <article
-              key={student.slug}
-              className="rounded-xl border border-slate-200 p-4"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h3 className="font-black text-slate-900">{student.name}</h3>
-                  <p className="text-sm text-slate-600">{student.course}</p>
+          {loading ? (
+            <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
+              A carregar estudantes...
+            </div>
+          ) : (
+            students.map((student) => (
+              <article
+                key={student.slug}
+                className="rounded-xl border border-slate-200 p-4"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-black text-slate-900">
+                      {student.name}
+                    </h3>
+                    <p className="text-sm text-slate-600">{student.course}</p>
+                  </div>
+                  <Link
+                    href={`/perfil/${student.slug}`}
+                    className="text-sm font-bold text-cyan-700 hover:underline"
+                  >
+                    Ver perfil
+                  </Link>
                 </div>
-                <Link
-                  href={`/perfil/${student.slug}`}
-                  className="text-sm font-bold text-cyan-700 hover:underline"
-                >
-                  Ver perfil
-                </Link>
-              </div>
 
-              <div className="mt-3 grid gap-3 md:grid-cols-[120px_1fr_auto] md:items-center">
-                <label className="text-sm font-semibold text-slate-700">
-                  Progresso
-                </label>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  defaultValue={student.progressScore}
-                  className="w-full"
-                />
-                <button
-                  type="button"
-                  className="rounded-lg bg-cyan-700 px-3 py-2 text-xs font-bold text-white"
-                >
-                  Guardar
-                </button>
-              </div>
-            </article>
-          ))}
+                <div className="mt-3 grid gap-3 md:grid-cols-[120px_1fr_auto] md:items-center">
+                  <label className="text-sm font-semibold text-slate-700">
+                    Progresso
+                  </label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    defaultValue={student.progressScore}
+                    className="w-full"
+                  />
+                  <button
+                    type="button"
+                    className="rounded-lg bg-cyan-700 px-3 py-2 text-xs font-bold text-white"
+                  >
+                    Guardar
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
         </div>
       </section>
     </AppShell>

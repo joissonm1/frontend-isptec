@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BriefcaseBusiness,
   GraduationCap,
@@ -6,11 +8,14 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { StudentProgressSection } from "@/components/profile/StudentProgressSection";
+import { api, apiMappers } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
 
 type PerfilPageProps = {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 };
 
 const skills = [
@@ -40,12 +45,75 @@ const experiences = [
   },
 ];
 
-export default async function PerfilPage({ params }: PerfilPageProps) {
-  const { slug } = await params;
-  const displayName = slug
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+export default function PerfilPage({ params }: PerfilPageProps) {
+  const { slug } = params;
+  const session = useAuthStore((state) => state.session);
+  const [profileName, setProfileName] = useState("");
+  const [profileRole, setProfileRole] = useState<
+    "student" | "professor" | "company" | "university"
+  >("student");
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [skillsList, setSkillsList] = useState(skills);
+  const [experienceList, setExperienceList] = useState(experiences);
+  const [loading, setLoading] = useState(true);
+
+  const displayName = useMemo(() => {
+    if (profileName) {
+      return profileName;
+    }
+    return slug
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  }, [profileName, slug]);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      try {
+        const response = await api.students.list(session?.token ?? null);
+        const data = Array.isArray(response.data)
+          ? response.data
+          : (response.data?.data ?? []);
+        const normalized = data.map(apiMappers.normalizeStudentProfile);
+        const found = normalized.find((student) => student.slug === slug);
+        if (found && active) {
+          setProfileName(found.name);
+          setProfileRole("student");
+          setProfileId(found.id ?? null);
+          setSkillsList(found.skills?.length ? found.skills : skills);
+        }
+
+        if (found?.id) {
+          try {
+            const profileResponse = await api.profiles.student(
+              found.id,
+              session?.token ?? null,
+            );
+            const profileData =
+              profileResponse.data?.data ?? profileResponse.data;
+            if (profileData?.experiences && active) {
+              setExperienceList(profileData.experiences);
+            }
+          } catch (error) {
+            // Mantem fallback local.
+          }
+        }
+      } catch (error) {
+        // Mantem fallback local.
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [slug, session?.token]);
 
   return (
     <AppShell>
@@ -138,7 +206,7 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
           <section className="rounded-2xl border border-slate-200 bg-white p-6">
             <h2 className="text-2xl font-black text-slate-900">Experiência</h2>
             <div className="mt-4 space-y-4">
-              {experiences.map((exp) => (
+              {experienceList.map((exp) => (
                 <article
                   key={exp.title}
                   className="rounded-xl border border-slate-200 p-4"
@@ -195,12 +263,16 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
         </div>
 
         <div className="space-y-4">
-          <StudentProgressSection profileSlug={slug} />
+          <StudentProgressSection
+            profileSlug={slug}
+            profileRole={profileRole}
+            studentId={profileId}
+          />
 
           <section className="rounded-2xl border border-slate-200 bg-white p-5">
             <h3 className="text-xl font-black text-slate-900">Competências</h3>
             <div className="mt-3 flex flex-wrap gap-2">
-              {skills.map((skill) => (
+              {skillsList.map((skill) => (
                 <span
                   key={skill}
                   className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-800"
@@ -234,6 +306,11 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
               </p>
             </article>
           </section>
+          {loading && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+              A carregar perfil...
+            </div>
+          )}
         </div>
       </div>
     </AppShell>

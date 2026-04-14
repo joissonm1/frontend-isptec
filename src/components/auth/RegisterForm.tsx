@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { api, apiMappers } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
 
 const registerSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
@@ -16,14 +18,26 @@ const registerSchema = z.object({
 type RegisterInput = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
+  const setSession = useAuthStore((state) => state.setSession);
+  const setToken = useAuthStore((state) => state.setToken);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 900));
+  const onSubmit = async (data: RegisterInput) => {
+    const payload = {
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      password: data.password,
+    };
+
+    const response = await api.auth.register(payload);
+    const { session, token } = apiMappers.normalizeAuthSession(response.data);
+    setSession(session);
+    setToken(token ?? null);
   };
 
   return (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleUserRound, House, MessageCircle, Search } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store";
+import { api } from "@/lib/api";
 
 export function TopNav() {
   const router = useRouter();
@@ -62,6 +63,7 @@ export function TopNav() {
             <button
               type="button"
               onClick={() => {
+                api.auth.logout(session?.token ?? null).catch(() => null);
                 logout();
                 router.push("/login");
               }}

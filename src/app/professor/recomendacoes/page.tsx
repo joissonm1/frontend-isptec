@@ -1,6 +1,11 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { suggestedStudentProfiles } from "@/lib/mock-data";
+import { api, apiMappers } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
 
 const companies = [
   "NexaTech",
@@ -10,6 +15,42 @@ const companies = [
 ];
 
 export default function ProfessorRecomendacoesPage() {
+  const [students, setStudents] = useState(suggestedStudentProfiles);
+  const [loading, setLoading] = useState(true);
+  const session = useAuthStore((state) => state.session);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      try {
+        const response = await api.students.list(session?.token ?? null);
+        const data = Array.isArray(response.data)
+          ? response.data
+          : (response.data?.data ?? []);
+        const normalized = data.map(apiMappers.normalizeStudentProfile);
+        if (active) {
+          setStudents(
+            normalized.length ? normalized : suggestedStudentProfiles,
+          );
+        }
+      } catch (error) {
+        if (active) {
+          setStudents(suggestedStudentProfiles);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [session?.token]);
+
   return (
     <AppShell>
       <section className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -50,11 +91,15 @@ export default function ProfessorRecomendacoesPage() {
               Estudante
             </label>
             <select className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm">
-              {suggestedStudentProfiles.map((student) => (
-                <option key={student.slug} value={student.slug}>
-                  {student.name}
-                </option>
-              ))}
+              {loading ? (
+                <option>A carregar...</option>
+              ) : (
+                students.map((student) => (
+                  <option key={student.slug} value={student.slug}>
+                    {student.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 

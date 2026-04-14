@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { mockUsers, useAuthStore } from "@/features/auth/store";
+import { useAuthStore } from "@/features/auth/store";
 
 type StudentProgressSectionProps = {
   profileSlug: string;
+  profileRole?: "student" | "professor" | "company" | "university";
+  studentId?: string | null;
 };
 
 const progressData = [
@@ -16,13 +18,17 @@ const progressData = [
 
 export function StudentProgressSection({
   profileSlug,
+  profileRole,
+  studentId,
 }: StudentProgressSectionProps) {
   const session = useAuthStore((state) => state.session);
 
   const viewedRole = useMemo(() => {
-    const found = mockUsers.find((user) => user.profileSlug === profileSlug);
-    return found?.role ?? "student";
-  }, [profileSlug]);
+    if (profileRole) {
+      return profileRole;
+    }
+    return "student";
+  }, [profileRole]);
 
   const canSeeProgress = useMemo(() => {
     if (!session) {

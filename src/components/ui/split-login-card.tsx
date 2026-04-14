@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mockUsers, useAuthStore } from "@/features/auth/store";
+import { api, apiMappers } from "@/lib/api";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -25,6 +26,7 @@ const roleLabel: Record<(typeof mockUsers)[number]["role"], string> = {
 export default function SplitLoginCard() {
   const router = useRouter();
   const setSession = useAuthStore((state) => state.setSession);
+  const setToken = useAuthStore((state) => state.setToken);
   const {
     register,
     setValue,
@@ -50,19 +52,26 @@ export default function SplitLoginCard() {
   };
 
   const onSubmit = async (data: LoginInput) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const found = mockUsers.find(
-      (user) =>
-        user.email.toLowerCase() === data.email.toLowerCase() &&
-        user.password === data.password,
-    );
+    try {
+      const response = await api.auth.login(data);
+      const { session, token } = apiMappers.normalizeAuthSession(response.data);
+      setSession(session);
+      setToken(token ?? null);
+      redirectByRole(session.role);
+    } catch (error) {
+      const found = mockUsers.find(
+        (user) =>
+          user.email.toLowerCase() === data.email.toLowerCase() &&
+          user.password === data.password,
+      );
 
-    if (!found) {
-      alert("Credenciais inválidas. Usa uma conta de teste abaixo.");
-      return;
+      if (!found) {
+        alert("Credenciais inválidas. Usa uma conta de teste abaixo.");
+        return;
+      }
+
+      loginAsUser(found);
     }
-
-    loginAsUser(found);
   };
 
   return (

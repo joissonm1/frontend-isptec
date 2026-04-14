@@ -1,9 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
 
-export function OfferApplyDrawer() {
+type OfferApplyDrawerProps = {
+  jobId: string;
+};
+
+export function OfferApplyDrawer({ jobId }: OfferApplyDrawerProps) {
   const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const session = useAuthStore((state) => state.session);
+
+  const submitApplication = async (event: FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+
+    try {
+      if (file) {
+        const formData = new FormData();
+        formData.append("message", message);
+        formData.append("cv", file);
+        await api.jobs.apply(jobId, formData, session?.token ?? null, true);
+      } else {
+        await api.jobs.apply(jobId, { message }, session?.token ?? null);
+      }
+      setOpen(false);
+      setMessage("");
+      setFile(null);
+    } catch (error) {
+      alert("Nao foi possivel enviar a candidatura agora.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div>
@@ -28,12 +61,14 @@ export function OfferApplyDrawer() {
                 Fechar
               </button>
             </div>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={submitApplication}>
               <div>
                 <label className="mb-1 block text-sm font-semibold text-slate-700">
                   Mensagem
                 </label>
                 <textarea
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
                   className="h-32 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-cyan-600"
                   placeholder="Fala brevemente sobre o teu perfil e motivação..."
                 />
@@ -44,11 +79,15 @@ export function OfferApplyDrawer() {
                 </label>
                 <input
                   type="file"
+                  onChange={(event) => setFile(event.target.files?.[0] ?? null)}
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
                 />
               </div>
-              <button className="w-full rounded-xl bg-cyan-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-800">
-                Submeter candidatura
+              <button
+                className="w-full rounded-xl bg-cyan-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={submitting}
+              >
+                {submitting ? "A enviar..." : "Submeter candidatura"}
               </button>
             </form>
           </div>
