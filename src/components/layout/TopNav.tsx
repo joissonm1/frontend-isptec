@@ -1,22 +1,31 @@
-import Link from "next/link";
-import {
-  Bell,
-  BriefcaseBusiness,
-  House,
-  MessageCircle,
-  Search,
-  Users,
-} from "lucide-react";
+"use client";
 
-const items = [
-  { href: "/dashboard", label: "Início", icon: House },
-  { href: "/feed", label: "Rede", icon: Users },
-  { href: "/ofertas", label: "Vagas", icon: BriefcaseBusiness },
-  { href: "/candidaturas", label: "Mensagens", icon: MessageCircle },
-  { href: "/impacto-social", label: "Impacto", icon: Bell },
-];
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { CircleUserRound, House, MessageCircle, Search } from "lucide-react";
+import { useAuthStore } from "@/features/auth/store";
 
 export function TopNav() {
+  const router = useRouter();
+  const session = useAuthStore((state) => state.session);
+  const logout = useAuthStore((state) => state.logout);
+
+  const profileHref = session ? `/perfil/${session.profileSlug}` : "/login";
+
+  const roleLabel =
+    {
+      student: "Aluno",
+      professor: "Professor",
+      company: "Empresa",
+      university: "Universidade",
+    }[session?.role ?? "student"] || "Convidado";
+
+  const items = [
+    { href: "/dashboard", label: "Início", icon: House },
+    { href: "/candidaturas", label: "Mensagens", icon: MessageCircle },
+    { href: profileHref, label: "Meu perfil", icon: CircleUserRound },
+  ];
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
@@ -34,6 +43,11 @@ export function TopNav() {
           />
         </div>
         <nav className="ml-auto hidden items-center gap-4 md:flex">
+          {session && (
+            <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-xs font-bold text-cyan-700">
+              {roleLabel}
+            </span>
+          )}
           {items.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
@@ -44,6 +58,25 @@ export function TopNav() {
               {label}
             </Link>
           ))}
+          {session ? (
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                router.push("/login");
+              }}
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Login
+            </Link>
+          )}
         </nav>
       </div>
     </header>

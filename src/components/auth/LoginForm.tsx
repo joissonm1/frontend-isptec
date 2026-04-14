@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { mockUsers, useAuthStore } from "@/features/auth/store";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -13,14 +15,41 @@ const loginSchema = z.object({
 type LoginInput = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+  const router = useRouter();
+  const setSession = useAuthStore((state) => state.setSession);
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: LoginInput) => {
     await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const found = mockUsers.find(
+      (user) =>
+        user.email.toLowerCase() === data.email.toLowerCase() &&
+        user.password === data.password,
+    );
+
+    if (!found) {
+      alert("Credenciais inválidas. Usa uma conta demo abaixo.");
+      return;
+    }
+
+    setSession(found);
+
+    if (found.role === "company") {
+      router.push("/empresa/dashboard");
+      return;
+    }
+    if (found.role === "professor") {
+      router.push("/professor/dashboard");
+      return;
+    }
+
+    router.push("/feed");
   };
 
   return (
@@ -60,6 +89,30 @@ export function LoginForm() {
       >
         {isSubmitting ? "A entrar..." : "Entrar"}
       </button>
+
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-600">
+          Contas demo
+        </p>
+        <div className="mt-2 grid gap-2 text-xs">
+          {mockUsers.map((user) => (
+            <button
+              key={user.email}
+              type="button"
+              onClick={() => {
+                setValue("email", user.email);
+                setValue("password", user.password);
+              }}
+              className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-left text-slate-700 hover:bg-slate-100"
+            >
+              <span className="font-semibold">{user.role}</span> - {user.email}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-slate-500">
+          Senha para todas: 123456
+        </p>
+      </div>
 
       <p className="text-center text-sm text-slate-600">
         Ainda não tens conta?{" "}

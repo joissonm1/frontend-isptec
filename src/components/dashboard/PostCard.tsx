@@ -5,6 +5,13 @@ type PostCardProps = {
 };
 
 export function PostCard({ post }: PostCardProps) {
+  const roleLabel = {
+    student: "Aluno",
+    professor: "Professor",
+    company: "Empresa",
+    university: "Universidade",
+  }[post.authorType];
+
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="flex items-center justify-between">
@@ -14,10 +21,27 @@ export function PostCard({ post }: PostCardProps) {
             {post.role} • {post.time}
           </p>
         </div>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700">
+            {roleLabel}
+          </span>
+          <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-bold text-cyan-700">
+            {post.category}
+          </span>
+        </div>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-slate-700">
         {post.content}
       </p>
+      {post.imageUrl && (
+        <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
+          <img
+            src={post.imageUrl}
+            alt={post.imageAlt ?? "Imagem da publicação"}
+            className="h-64 w-full object-cover"
+          />
+        </div>
+      )}
       <div className="mt-4 flex gap-2 text-xs text-slate-500">
         <span>{post.likes} gostos</span>
         <span>•</span>

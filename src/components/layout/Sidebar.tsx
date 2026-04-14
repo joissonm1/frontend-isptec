@@ -1,40 +1,119 @@
-import Link from "next/link";
-import {
-  Bookmark,
-  CircleUserRound,
-  Compass,
-  LayoutDashboard,
-  Rocket,
-  School,
-} from "lucide-react";
+"use client";
 
-const links = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/feed", label: "Feed", icon: Compass },
-  { href: "/ofertas", label: "Ofertas", icon: Rocket },
-  { href: "/candidaturas", label: "Candidaturas", icon: Bookmark },
-  { href: "/perfil/joisson", label: "Meu perfil", icon: CircleUserRound },
-  { href: "/como-funciona", label: "Como funciona", icon: School },
+import {
+  BookMarked,
+  CircleHelp,
+  GraduationCap,
+  LayoutDashboard,
+  Library,
+  Presentation,
+  Rocket,
+  Users,
+  Settings,
+} from "lucide-react";
+import {
+  MenuItem,
+  SidebarWithSubmenu,
+} from "@/components/ui/sidebar-with-submenu";
+import { useAuthStore } from "@/features/auth/store";
+
+const footerLinks: MenuItem[] = [
+  {
+    href: "/como-funciona",
+    name: "Ajuda",
+    icon: <CircleHelp className="h-4 w-4" />,
+  },
+  {
+    href: "/dashboard",
+    name: "Definições",
+    icon: <Settings className="h-4 w-4" />,
+  },
 ];
 
 export function Sidebar() {
-  return (
-    <aside className="rounded-2xl border border-slate-200 bg-slate-900 p-5 text-slate-100">
-      <div className="mb-6 text-3xl font-black tracking-tight text-cyan-300">
-        42
-      </div>
-      <div className="space-y-2">
-        {links.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-cyan-300"
-          >
-            <Icon className="h-4 w-4" />
-            {label}
-          </Link>
-        ))}
-      </div>
-    </aside>
-  );
+  const session = useAuthStore((state) => state.session);
+
+  const baseLinks: MenuItem[] = [
+    {
+      href: "/dashboard",
+      name: "Dashboard",
+      icon: <LayoutDashboard className="h-4 w-4" />,
+    },
+    {
+      href: "/ofertas",
+      name: "Vagas",
+      icon: <Rocket className="h-4 w-4" />,
+      children: [
+        { href: "/ofertas", name: "Todas" },
+        { href: "/empresa/ofertas", name: "Empresa" },
+        { href: "/empresa/ofertas/nova", name: "Nova vaga" },
+      ],
+    },
+    {
+      href: "/candidaturas",
+      name: "Candidaturas",
+      icon: <BookMarked className="h-4 w-4" />,
+    },
+  ];
+
+  const companyExtraLinks: MenuItem[] =
+    session?.role === "company"
+      ? [
+          {
+            href: "/empresa/perfis",
+            name: "Talentos",
+            icon: <Users className="h-4 w-4" />,
+          },
+        ]
+      : [];
+
+  const professorExtraLinks: MenuItem[] =
+    session?.role === "professor"
+      ? [
+          {
+            href: "/professor/recomendacoes",
+            name: "Recomendar",
+            icon: <Users className="h-4 w-4" />,
+          },
+          {
+            href: "/professor/estudantes",
+            name: "Estudantes",
+            icon: <GraduationCap className="h-4 w-4" />,
+          },
+        ]
+      : [];
+
+  const roleLinks: Record<string, MenuItem> = {
+    student: {
+      href: "/feed",
+      name: "Aluno",
+      icon: <GraduationCap className="h-4 w-4" />,
+    },
+    professor: {
+      href: "/professor/dashboard",
+      name: "Professor",
+      icon: <Presentation className="h-4 w-4" />,
+    },
+    company: {
+      href: "/empresa/dashboard",
+      name: "Empresa",
+      icon: <Rocket className="h-4 w-4" />,
+    },
+    university: {
+      href: "/dashboard",
+      name: "Universidade",
+      icon: <Library className="h-4 w-4" />,
+    },
+  };
+
+  const links = session
+    ? [
+        roleLinks[session.role],
+        ...companyExtraLinks,
+        ...professorExtraLinks,
+        ...baseLinks,
+      ]
+    : baseLinks;
+
+  return <SidebarWithSubmenu items={links} footerItems={footerLinks} compact />;
 }

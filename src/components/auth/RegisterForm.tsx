@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 const registerSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
   email: z.string().email("Email inválido"),
-  role: z.enum(["student", "professor", "company"]),
+  role: z.enum(["student", "professor", "company", "university"]),
   password: z.string().min(6, "Mínimo 6 caracteres"),
   terms: z.boolean().refine((value) => value, "Aceita os termos"),
 });
@@ -68,11 +68,13 @@ export function RegisterForm() {
           <option value="student">Estudante</option>
           <option value="professor">Professor</option>
           <option value="company">Empresa</option>
+          <option value="university">Universidade</option>
         </select>
       </div>
 
       <div className="rounded-xl bg-cyan-50 p-3 text-xs text-cyan-800">
-        Conta empresa terá acesso à publicação e gestão de ofertas de estágio.
+        Estudante publica progresso e competências; professor recomenda; empresa
+        publica vagas; universidade gere comunidade académica.
       </div>
 
       <div>

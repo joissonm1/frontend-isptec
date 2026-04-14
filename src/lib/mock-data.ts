@@ -1,11 +1,18 @@
-export type Role = "student" | "professor" | "company";
+export type Role = "student" | "professor" | "company" | "university";
+
+export type FeedAudience = "friends" | "suggested";
 
 export type FeedPost = {
   id: string;
   author: string;
+  authorType: Role;
   role: string;
   time: string;
+  category: "Progresso" | "Notas" | "Concurso" | "Conquista";
+  audience: FeedAudience;
   content: string;
+  imageUrl?: string;
+  imageAlt?: string;
   likes: number;
   comments: number;
 };
@@ -23,6 +30,16 @@ export type Offer = {
   target: string;
 };
 
+export type SuggestedStudentProfile = {
+  slug: string;
+  name: string;
+  course: string;
+  university: string;
+  skills: string[];
+  progressScore: number;
+  lastUpdate: string;
+};
+
 export const impactStats = [
   { label: "Estudantes conectados", value: 4200, suffix: "+" },
   { label: "Empresas parceiras", value: 180, suffix: "+" },
@@ -34,22 +51,60 @@ export const feedPosts: FeedPost[] = [
   {
     id: "1",
     author: "Joisson Miguel",
+    authorType: "student",
     role: "Estudante de Engenharia Informática",
     time: "há 2 h",
+    category: "Conquista",
+    audience: "friends",
     content:
       "Concluí o projeto de análise de dados da universidade e apresentei para duas empresas parceiras.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Estudantes apresentando projeto em laboratório",
     likes: 82,
     comments: 14,
   },
   {
     id: "2",
     author: "Marta Silva",
+    authorType: "company",
     role: "Talent Acquisition @ NexaTech",
     time: "há 4 h",
+    category: "Concurso",
+    audience: "suggested",
     content:
       "Estamos com novas vagas de estágio em Frontend e Data. Procuramos estudantes com vontade de aprender.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Equipa profissional em reunião",
     likes: 49,
     comments: 8,
+  },
+  {
+    id: "3",
+    author: "ISPTEC",
+    authorType: "university",
+    role: "Universidade parceira",
+    time: "há 6 h",
+    category: "Notas",
+    audience: "suggested",
+    content:
+      "Resultados da 1a fase de avaliações já disponíveis no portal. Consulta o calendário de revisões e apoio pedagógico.",
+    likes: 31,
+    comments: 5,
+  },
+  {
+    id: "4",
+    author: "Prof. Ana Gomes",
+    authorType: "professor",
+    role: "Docente de Engenharia de Software",
+    time: "há 8 h",
+    category: "Progresso",
+    audience: "friends",
+    content:
+      "Parabéns aos estudantes que apresentaram protótipos com excelente qualidade técnica. Continuem a publicar as evoluções no vosso perfil UniBridge.",
+    likes: 64,
+    comments: 12,
   },
 ];
 
@@ -103,4 +158,34 @@ export const trendItems = [
   "Empresas a procurar estágios remotos",
   "Portfólios práticos com projetos reais",
   "Soft skills mais valorizadas em 2026",
+];
+
+export const suggestedStudentProfiles: SuggestedStudentProfile[] = [
+  {
+    slug: "joisson-miguel",
+    name: "Joisson Miguel",
+    course: "Engenharia Informática",
+    university: "ISPTEC",
+    skills: ["NestJS", "React", "SQL"],
+    progressScore: 79,
+    lastUpdate: "Atualizou projeto de dashboard acadêmico",
+  },
+  {
+    slug: "ana-paula-fernandes",
+    name: "Ana Paula Fernandes",
+    course: "Ciência de Dados",
+    university: "Universidade Agostinho Neto",
+    skills: ["Python", "Power BI", "Estatística"],
+    progressScore: 83,
+    lastUpdate: "Publicou análise de competição de dados",
+  },
+  {
+    slug: "carlos-mateus",
+    name: "Carlos Mateus",
+    course: "Engenharia de Telecomunicações",
+    university: "ISPTEC",
+    skills: ["Redes", "Linux", "Cloud"],
+    progressScore: 74,
+    lastUpdate: "Partilhou certificação de redes",
+  },
 ];
