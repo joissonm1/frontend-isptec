@@ -1,7 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CircularGallery, type GalleryItem } from "@/components/ui/circular-gallery";
+import {
+  CircularGallery,
+  type GalleryItem,
+} from "@/components/ui/circular-gallery";
 
 type SocialBenefit = {
   title: string;
@@ -61,11 +64,11 @@ const teamGallery: GalleryItem[] = [
     },
   },
   {
-    common: "Paulo",
+    common: "Melzira",
     binomial: "Coordenação",
     photo: {
       url: "/me.png",
-      text: "Paulo",
+      text: "Melzira",
       pos: "50% 50%",
       by: "UniBridge",
     },
@@ -110,14 +113,22 @@ export function TeamSocialImpact() {
           transition={{ duration: 0.4 }}
           className="ui-card rounded-2xl border border-border p-5"
         >
-          <h3 className="text-lg font-semibold text-foreground">Benefícios sociais</h3>
-          <p className="mt-1 text-sm text-muted">Indicadores mockados para validar o valor público da solução.</p>
+          <h3 className="text-lg font-semibold text-foreground">
+            Benefícios sociais
+          </h3>
+          <p className="mt-1 text-sm text-muted">
+            Indicadores mockados para validar o valor público da solução.
+          </p>
           <div className="mt-4 space-y-3">
             {socialBenefits.map((benefit) => (
               <div key={benefit.title}>
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted">{benefit.title}</span>
-                  <span className="text-xs font-semibold text-primary">{benefit.score}%</span>
+                  <span className="text-xs font-medium text-muted">
+                    {benefit.title}
+                  </span>
+                  <span className="text-xs font-semibold text-primary">
+                    {benefit.score}%
+                  </span>
                 </div>
                 <div className="h-2 rounded-full bg-border/60">
                   <div
@@ -138,8 +149,12 @@ export function TeamSocialImpact() {
           transition={{ duration: 0.45, delay: 0.05 }}
           className="ui-card rounded-2xl border border-border p-5"
         >
-          <h3 className="text-lg font-semibold text-foreground">Impacto com gráficos</h3>
-          <p className="mt-1 text-sm text-muted">Evolução simulada de estudantes ativos e colocações em estágio.</p>
+          <h3 className="text-lg font-semibold text-foreground">
+            Impacto com gráficos
+          </h3>
+          <p className="mt-1 text-sm text-muted">
+            Evolução simulada de estudantes ativos e colocações em estágio.
+          </p>
 
           <div className="mt-4 rounded-xl bg-background/50 p-3">
             <div className="flex items-end gap-2">
@@ -168,7 +183,8 @@ export function TeamSocialImpact() {
             </div>
             <div className="mt-3 flex items-center gap-4 text-[11px] text-muted">
               <span className="inline-flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-primary" /> Estudantes ativos
+                <span className="h-2 w-2 rounded-full bg-primary" /> Estudantes
+                ativos
               </span>
               <span className="inline-flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-muted" /> Colocações
@@ -188,16 +204,22 @@ export function TeamSocialImpact() {
         >
           <div className="relative flex min-h-150 flex-col">
             <div className="relative z-10 p-5 sm:p-6">
-              <h3 className="text-lg font-black text-foreground">Equipa de desenvolvimento</h3>
+              <h3 className="text-lg font-black text-foreground">
+                Equipa de desenvolvimento
+              </h3>
               <p className="mt-1 max-w-3xl text-sm text-muted">
-                Uma galeria 3D para destacar as pessoas e parceiros por trás do UniBridge.
-                Faz scroll para rodar, ou deixa em auto-rotação.
+                Uma galeria 3D para destacar as pessoas e parceiros por trás do
+                UniBridge. Faz scroll para rodar, ou deixa em auto-rotação.
               </p>
             </div>
 
             <div className="relative flex-1">
               <div className="absolute inset-0">
-                <CircularGallery items={teamGallery} radius={520} autoRotateSpeed={1} />
+                <CircularGallery
+                  items={teamGallery}
+                  radius={520}
+                  autoRotateSpeed={1}
+                />
               </div>
               <div
                 aria-hidden
