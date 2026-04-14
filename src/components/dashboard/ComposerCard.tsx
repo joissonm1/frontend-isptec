@@ -10,7 +10,7 @@ export function ComposerCard() {
       <div className="mt-2 text-xs text-slate-500">
         Dica: podes publicar apenas texto ou texto com foto.
       </div>
-      <div className="mt-4 grid grid-cols-4 gap-2 text-sm font-semibold text-slate-600">
+      <div className="mt-4 grid grid-cols-4 gap-2 text-sm font-medium text-slate-600">
         <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
           Progresso
         </button>
