@@ -184,7 +184,7 @@ h6 {
   border-radius: var(--radius-md);
   background: var(--color-input);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-inset);
+  box-shadow: var(--shadow-soft);
   color: var(--color-text);
 }
 
@@ -194,7 +194,7 @@ h6 {
 
 .ui-input:focus {
   outline: none;
-  box-shadow: var(--shadow-inset), var(--focus-ring);
+  box-shadow: var(--shadow-soft-hover), var(--focus-ring);
   border-color: color-mix(in srgb, var(--color-interactive-2) 40%, transparent);
 }
 
