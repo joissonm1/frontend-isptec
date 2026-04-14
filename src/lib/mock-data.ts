@@ -15,6 +15,14 @@ export type FeedPost = {
   imageAlt?: string;
   likes: number;
   comments: number;
+  commentsList: FeedComment[];
+};
+
+export type FeedComment = {
+  id: string;
+  author: string;
+  time: string;
+  message: string;
 };
 
 export type Offer = {
@@ -79,7 +87,21 @@ export const feedPosts: FeedPost[] = [
       "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
     imageAlt: "Estudantes apresentando projeto em laboratório",
     likes: 82,
-    comments: 14,
+    comments: 2,
+    commentsList: [
+      {
+        id: "1-1",
+        author: "Marta Silva",
+        time: "há 50 min",
+        message: "Parabens! Excelente conquista.",
+      },
+      {
+        id: "1-2",
+        author: "Prof. Ana Gomes",
+        time: "há 40 min",
+        message: "Orgulho do teu progresso. Continua assim.",
+      },
+    ],
   },
   {
     id: "2",
@@ -95,7 +117,21 @@ export const feedPosts: FeedPost[] = [
       "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
     imageAlt: "Equipa profissional em reunião",
     likes: 49,
-    comments: 8,
+    comments: 2,
+    commentsList: [
+      {
+        id: "2-1",
+        author: "Joisson Miguel",
+        time: "há 3 h",
+        message: "Como posso candidatar-me a estas vagas?",
+      },
+      {
+        id: "2-2",
+        author: "Marta Silva",
+        time: "há 2 h",
+        message: "Vem ao feed de vagas e seleciona a oferta desejada.",
+      },
+    ],
   },
   {
     id: "3",
@@ -108,7 +144,15 @@ export const feedPosts: FeedPost[] = [
     content:
       "Resultados da 1a fase de avaliações já disponíveis no portal. Consulta o calendário de revisões e apoio pedagógico.",
     likes: 31,
-    comments: 5,
+    comments: 1,
+    commentsList: [
+      {
+        id: "3-1",
+        author: "Carlos Mateus",
+        time: "há 5 h",
+        message: "Obrigado pela partilha. Vou consultar hoje.",
+      },
+    ],
   },
   {
     id: "4",
@@ -121,7 +165,21 @@ export const feedPosts: FeedPost[] = [
     content:
       "Parabéns aos estudantes que apresentaram protótipos com excelente qualidade técnica. Continuem a publicar as evoluções no vosso perfil UniBridge.",
     likes: 64,
-    comments: 12,
+    comments: 2,
+    commentsList: [
+      {
+        id: "4-1",
+        author: "Joisson Miguel",
+        time: "há 7 h",
+        message: "Obrigado, professora!",
+      },
+      {
+        id: "4-2",
+        author: "Ana Paula Fernandes",
+        time: "há 6 h",
+        message: "Foi uma experiencia incrivel.",
+      },
+    ],
   },
 ];
 
