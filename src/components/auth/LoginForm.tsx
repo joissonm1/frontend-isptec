@@ -14,6 +14,13 @@ const loginSchema = z.object({
 
 type LoginInput = z.infer<typeof loginSchema>;
 
+const roleLabel: Record<(typeof mockUsers)[number]["role"], string> = {
+  student: "Estudante",
+  professor: "Professor",
+  company: "Empresa",
+  university: "Universidade",
+};
+
 export function LoginForm() {
   const router = useRouter();
   const setSession = useAuthStore((state) => state.setSession);
@@ -23,6 +30,19 @@ export function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+
+  const redirectByRole = (role: (typeof mockUsers)[number]["role"]) => {
+    if (role === "company") {
+      router.push("/empresa/dashboard");
+      return;
+    }
+    if (role === "professor") {
+      router.push("/professor/dashboard");
+      return;
+    }
+
+    router.push("/feed");
+  };
 
   const onSubmit = async (data: LoginInput) => {
     await new Promise((resolve) => setTimeout(resolve, 800));
@@ -39,17 +59,12 @@ export function LoginForm() {
     }
 
     setSession(found);
+    redirectByRole(found.role);
+  };
 
-    if (found.role === "company") {
-      router.push("/empresa/dashboard");
-      return;
-    }
-    if (found.role === "professor") {
-      router.push("/professor/dashboard");
-      return;
-    }
-
-    router.push("/feed");
+  const loginAsMockUser = (user: (typeof mockUsers)[number]) => {
+    setSession(user);
+    redirectByRole(user.role);
   };
 
   return (
@@ -96,22 +111,44 @@ export function LoginForm() {
         </p>
         <div className="mt-2 grid gap-2 text-xs">
           {mockUsers.map((user) => (
-            <button
+            <div
               key={user.email}
-              type="button"
-              onClick={() => {
-                setValue("email", user.email);
-                setValue("password", user.password);
-              }}
-              className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-left text-slate-700 hover:bg-slate-100"
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-700"
             >
-              <span className="font-semibold">{user.role}</span> - {user.email}
-            </button>
+              <p className="text-xs font-semibold text-slate-900">
+                {user.name}
+              </p>
+              <p className="text-[11px] text-cyan-700">
+                {roleLabel[user.role]}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-600">
+                Email: {user.email}
+              </p>
+              <p className="text-[11px] text-slate-600">
+                Senha: {user.password}
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setValue("email", user.email);
+                    setValue("password", user.password);
+                  }}
+                  className="rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold hover:bg-slate-100"
+                >
+                  Preencher
+                </button>
+                <button
+                  type="button"
+                  onClick={() => loginAsMockUser(user)}
+                  className="rounded-md bg-cyan-700 px-2 py-1 text-[11px] font-semibold text-white hover:bg-cyan-800"
+                >
+                  Entrar com este user
+                </button>
+              </div>
+            </div>
           ))}
         </div>
-        <p className="mt-2 text-[11px] text-slate-500">
-          Senha para todas: 123456
-        </p>
       </div>
 
       <p className="text-center text-sm text-slate-600">

@@ -1,14 +1,26 @@
+"use client";
+
+import { useAuthStore } from "@/features/auth/store";
+
 export function ProfileCard() {
+  const session = useAuthStore((state) => state.session);
+
+  const roleDescription =
+    {
+      student: "Estudante",
+      professor: "Professor",
+      company: "Empresa parceira",
+      university: "Universidade",
+    }[session?.role ?? "student"] || "Utilizador";
+
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5">
       <div className="h-20 rounded-xl bg-gradient-to-r from-cyan-600 to-slate-900" />
       <div className="-mt-8 h-16 w-16 rounded-full border-4 border-white bg-slate-300" />
       <h2 className="mt-3 text-xl font-semibold text-slate-900">
-        Joisson Miguel
+        {session?.name ?? "Utilizador"}
       </h2>
-      <p className="text-sm text-slate-600">
-        Estudante de Engenharia Informática
-      </p>
+      <p className="text-sm text-slate-600">{roleDescription}</p>
       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div className="rounded-lg bg-slate-50 p-2">
           <p className="font-semibold text-cyan-700">99</p>
