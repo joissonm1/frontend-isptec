@@ -8,7 +8,16 @@ import { useAuthStore } from "@/features/auth/store";
 
 export function ComposerCard() {
   const session = useAuthStore((state) => state.session);
-  const visual = getProfileVisual(session?.profileSlug, session?.role);
+  const safeRole =
+    session?.role === "student" ||
+    session?.role === "professor" ||
+    session?.role === "company" ||
+    session?.role === "university"
+      ? session.role
+      : "student";
+  const visual =
+    getProfileVisual(session?.profileSlug, safeRole) ??
+    getProfileVisual(undefined, "student");
   const [content, setContent] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [visibility, setVisibility] = useState("PUBLIC");

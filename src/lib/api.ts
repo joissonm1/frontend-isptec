@@ -1,3 +1,5 @@
+import type { AuthRole } from "@/features/auth/store";
+
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 type ApiRequestOptions = {
@@ -133,6 +135,15 @@ const toSlug = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 
+const normalizeRole = (value: unknown): AuthRole => {
+  const role = String(value ?? "").toLowerCase();
+  if (role === "student" || role === "estudante") return "student";
+  if (role === "professor") return "professor";
+  if (role === "company" || role === "empresa") return "company";
+  if (role === "university" || role === "universidade") return "university";
+  return "student";
+};
+
 const normalizeAuthSession = (payload: any) => {
   const raw = payload?.data ?? payload;
   const token =
@@ -140,7 +151,7 @@ const normalizeAuthSession = (payload: any) => {
   const user = raw?.user ?? raw?.data?.user ?? raw?.profile ?? raw;
   const name = user?.name ?? user?.fullName ?? user?.username ?? "Utilizador";
   const email = user?.email ?? "";
-  const role = user?.role ?? user?.type ?? "student";
+  const role = normalizeRole(user?.role ?? user?.type ?? "student");
   const profileSlug =
     user?.profileSlug ?? user?.slug ?? toSlug(user?.name ?? "perfil");
   const id = user?.id ?? user?._id ?? null;

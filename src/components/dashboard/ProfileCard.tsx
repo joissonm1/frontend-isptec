@@ -10,10 +10,16 @@ export function ProfileCard() {
   const customProfile = useProfileStore(
     (state) => state.profiles[session?.profileSlug ?? ""],
   );
-  const visual = getProfileVisual(
-    session?.profileSlug,
-    session?.role ?? "student",
-  );
+  const safeRole =
+    session?.role === "student" ||
+    session?.role === "professor" ||
+    session?.role === "company" ||
+    session?.role === "university"
+      ? session.role
+      : "student";
+  const visual =
+    getProfileVisual(session?.profileSlug, safeRole) ??
+    getProfileVisual(undefined, "student");
 
   const roleDescription =
     {
