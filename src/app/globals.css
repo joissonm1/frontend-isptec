@@ -1,28 +1,28 @@
+/* stylelint-disable at-rule-no-unknown */
 @import "tailwindcss";
 
 :root {
   /* ------------------------------ */
-  /* Light theme tokens (semantic) */
+  /* Light theme tokens (semantic)  */
   /* ------------------------------ */
-  --bg-light: #f1f2f4;
-  --main-text-light: #040d5d;
-  --secondary-text-light: #161b33;
+  --bg-light: #F1F2F4;
+  --main-text-light: #040D5D;
+  --secondary-text-light: #161B33;
 
-  --cards-light: #a69cac;
-  --cards-hover-light: #b3a8b9;
+  --cards-light: #A69CAC;
+  --cards-hover-light: #B3A8B9;
 
-  --text-input-light: #ffffff;
+  --text-input-light: #FFFFFF;
 
-  /* cyan-700 is kept as core primary color */
-  --main-button-light: #0e7490;
-  --main-button-hover-light: #155e75;
+  --main-button-light: #262B68;
+  --main-button-hover-light: #474973;
 
-  --secondary-button-light: #aab1b8;
-  --secondary-button-hover-light: #c2c8ce;
+  --secondary-button-light: #AAB1B8;
+  --secondary-button-hover-light: #C2C8CE;
 
   --card-borders-light: rgba(22, 27, 51, 0.15);
 
-  --nav-bar-light: #f1f2f4;
+  --nav-bar-light: #F1F2F4;
 
   /* ---------------------------------------- */
   /* Internal mapped tokens (used by helpers) */
@@ -45,48 +45,51 @@
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
 
+  /* Light theme shadow math (per spec) */
   --shadow-highlight: rgba(255, 255, 255, 0.7);
   --shadow-ambient: rgba(0, 0, 0, 0.2);
 
-  --shadow-soft:
-    10px 10px 22px var(--shadow-ambient),
+  --shadow-soft: 10px 10px 22px var(--shadow-ambient),
     -10px -10px 22px var(--shadow-highlight);
-  --shadow-soft-hover:
-    12px 12px 26px var(--shadow-ambient),
+  --shadow-soft-hover: 12px 12px 26px var(--shadow-ambient),
     -12px -12px 26px var(--shadow-highlight);
-  --shadow-inset:
-    inset 6px 6px 14px var(--shadow-ambient),
+  --shadow-inset: inset 6px 6px 14px var(--shadow-ambient),
     inset -6px -6px 14px var(--shadow-highlight);
 
-  --focus-ring: 0 0 0 3px rgba(14, 116, 144, 0.25);
+  /* Form + focus */
+  --focus-ring: 0 0 0 3px rgba(38, 43, 104, 0.25);
 
   color-scheme: light;
 }
 
+/* Dark theme (derived only from palette) */
 html.dark,
 :root[data-theme="dark"] {
-  /* ----------------------------- */
-  /* Dark theme tokens (semantic) */
-  /* ----------------------------- */
-  --bg-dark: #0d1448;
-  --main-text-dark: #f1f2f4;
-  --secondary-text-dark: #aab1b8;
+  /* ------------------------------ */
+  /* Dark theme tokens (semantic)   */
+  /* ------------------------------ */
+  --bg-dark: #0D1448;
+  --main-text-dark: #F1F2F4;
+  --secondary-text-dark: #AAB1B8;
 
-  --cards-dark: #262b68;
-  --cards-hover-dark: #2f347a;
+  --cards-dark: #262B68;
+  --cards-hover-dark: #2F347A;
 
-  --text-input-dark: #1a1f5a;
+  --text-input-dark: #1A1F5A;
 
-  --main-button-dark: #0e7490;
-  --main-button-hover-dark: #22d3ee;
+  --main-button-dark: #A69CAC;
+  --main-button-hover-dark: #C0B6C8;
 
   --secondary-button-dark: #474973;
-  --secondary-button-hover-dark: #5a5da0;
+  --secondary-button-hover-dark: #5A5DA0;
 
   --card-borders-dark: rgba(241, 242, 244, 0.12);
 
-  --nav-bar-dark: #161b33;
+  --nav-bar-dark: #161B33;
 
+  /* ---------------------------------------- */
+  /* Internal mapped tokens (used by helpers) */
+  /* ---------------------------------------- */
   --color-bg: var(--bg-dark);
   --color-bg-2: var(--nav-bar-dark);
   --color-surface: var(--cards-dark);
@@ -100,15 +103,19 @@ html.dark,
   --color-border: var(--card-borders-dark);
   --color-nav: var(--nav-bar-dark);
 
+  /* Dark theme shadows (per spec) */
   --shadow-highlight: rgba(255, 255, 255, 0.05);
   --shadow-ambient: rgba(0, 0, 0, 0.6);
 
-  --focus-ring: 0 0 0 3px rgba(34, 211, 238, 0.22);
+  --focus-ring: 0 0 0 3px rgba(204, 187, 184, 0.22);
 
   color-scheme: dark;
 }
 
+/* csslint ignore:start */
+/* stylelint-disable-next-line at-rule-no-unknown */
 @theme inline {
+  /* Tailwind theme bridge */
   --color-background: var(--color-bg);
   --color-foreground: var(--color-text);
   --color-muted: var(--color-text-2);
@@ -122,10 +129,10 @@ html.dark,
   --font-sans: var(--font-source-sans);
   --font-heading: var(--font-poppins);
 }
+/* csslint ignore:end */
 
 body {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       900px circle at 8% 0%,
       color-mix(in srgb, var(--color-surface) 35%, transparent),
       transparent 55%
@@ -140,6 +147,7 @@ body {
   font-family: var(--font-source-sans), sans-serif;
 }
 
+/* Smooth theme transitions (keep subtle to avoid jank) */
 body,
 .ui-card,
 .ui-btn,
@@ -163,6 +171,8 @@ h5,
 h6 {
   font-family: var(--font-poppins), sans-serif;
 }
+
+/* --- Small “design system” helpers (kept minimal on purpose) --- */
 
 .ui-surface {
   background: color-mix(in srgb, var(--color-bg) 70%, transparent);
@@ -223,8 +233,8 @@ h6 {
 .ui-btn-primary {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-interactive-2) 92%, transparent),
-    color-mix(in srgb, var(--color-interactive) 65%, var(--color-interactive-2))
+  color-mix(in srgb, var(--color-interactive-2) 92%, transparent),
+  color-mix(in srgb, var(--color-interactive) 65%, var(--color-interactive-2))
   );
   border-color: color-mix(in srgb, var(--color-interactive-2) 40%, transparent);
   color: var(--color-bg);
@@ -251,6 +261,7 @@ h6 {
   text-decoration: underline;
 }
 
+/* Theme toggle (switch) */
 .ui-switch {
   display: inline-flex;
   align-items: center;
@@ -310,3 +321,4 @@ html.dark .ui-switch__thumb,
     transition: none;
   }
 }
+/* stylelint-enable at-rule-no-unknown */
