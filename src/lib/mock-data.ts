@@ -74,7 +74,7 @@ export const feedPosts: FeedPost[] = [
     category: "Conquista",
     audience: "friends",
     content:
-      "Concluí o projeto de análise de dados da universidade e apresentei para duas empresas parceiras.",
+      "Concluí o projeto de análise de dados da universidade e apresentei para duas empresas.",
     imageUrl:
       "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
     imageAlt: "Estudantes apresentando projeto em laboratório",
