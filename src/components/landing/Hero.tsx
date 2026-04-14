@@ -33,12 +33,6 @@ export function Hero() {
           >
             Começar agora
           </Link>
-          <Link
-            href="/como-funciona"
-      className="ui-btn px-6 py-3 text-sm font-bold"
-          >
-            Ver como funciona
-          </Link>
         </div>
       </motion.div>
     </section>
