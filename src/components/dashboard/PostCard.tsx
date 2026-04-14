@@ -1,11 +1,22 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { FeedPost } from "@/lib/mock-data";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
 
 type PostCardProps = {
   post: FeedPost;
 };
 
 export function PostCard({ post }: PostCardProps) {
+  const session = useAuthStore((state) => state.session);
+  const [showComment, setShowComment] = useState(false);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [likes, setLikes] = useState(post.likes);
+  const [comments, setComments] = useState(post.comments);
   const roleLabel = {
     student: "Aluno",
     professor: "Professor",
@@ -47,21 +58,78 @@ export function PostCard({ post }: PostCardProps) {
         </div>
       )}
       <div className="mt-4 flex gap-2 text-xs text-slate-500">
-        <span>{post.likes} gostos</span>
+        <span>{likes} gostos</span>
         <span>•</span>
-        <span>{post.comments} comentários</span>
+        <span>{comments} comentários</span>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-sm font-semibold text-slate-600">
-        <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
+        <button
+          className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100"
+          onClick={async () => {
+            if (!session?.token) {
+              alert("Faz login para curtir.");
+              return;
+            }
+            try {
+              await api.feed.likePost(post.id, session.token);
+              setLikes((prev) => prev + 1);
+            } catch (error) {
+              alert("Nao foi possivel curtir agora.");
+            }
+          }}
+        >
           Curtir
         </button>
-        <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
+        <button
+          className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100"
+          onClick={() => setShowComment((prev) => !prev)}
+        >
           Comentar
         </button>
         <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
           Partilhar
         </button>
       </div>
+      {showComment && (
+        <form
+          className="mt-3 flex gap-2"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            if (!comment.trim()) return;
+            if (!session?.token) {
+              alert("Faz login para comentar.");
+              return;
+            }
+            setSubmitting(true);
+            try {
+              await api.feed.addComment(
+                post.id,
+                { content: comment.trim() },
+                session.token,
+              );
+              setComment("");
+              setComments((prev) => prev + 1);
+            } catch (error) {
+              alert("Nao foi possivel comentar agora.");
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        >
+          <input
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            className="flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-cyan-600"
+            placeholder="Escreve um comentário..."
+          />
+          <button
+            disabled={submitting}
+            className="rounded-xl bg-cyan-700 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {submitting ? "A enviar..." : "Enviar"}
+          </button>
+        </form>
+      )}
     </article>
   );
 }

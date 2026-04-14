@@ -13,13 +13,10 @@ type ApiResponse<T> = {
   status: number;
 };
 
-const BASE_URLS = [
-  "https://localhost",
-  "http://localhost:433",
-  "http://localhost:3000",
-];
+const BASE_URLS = ["https://rbt6hr30-3000.uks1.devtunnels.ms"];
 
 const DEFAULT_TIMEOUT_MS = 8000;
+const DEBUG_API = true;
 
 const buildUrl = (base: string, path: string) =>
   `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
@@ -53,18 +50,36 @@ const fetchWithFallback = async (
   for (const base of BASE_URLS) {
     const { controller, timeout } = withTimeout(DEFAULT_TIMEOUT_MS);
     try {
+      if (DEBUG_API) {
+        console.info("[api] request", {
+          url: buildUrl(base, path),
+          method: init?.method ?? "GET",
+        });
+      }
       const response = await fetch(buildUrl(base, path), {
         ...init,
         signal: init?.signal ?? controller.signal,
       });
       clearTimeout(timeout);
       lastResponse = response;
+      if (DEBUG_API) {
+        console.info("[api] response", {
+          url: buildUrl(base, path),
+          status: response.status,
+        });
+      }
       if (!shouldFallback(response, null)) {
         return response;
       }
     } catch (error) {
       clearTimeout(timeout);
       lastError = error;
+      if (DEBUG_API) {
+        console.error("[api] error", {
+          url: buildUrl(base, path),
+          error,
+        });
+      }
     }
   }
 
@@ -75,7 +90,7 @@ const fetchWithFallback = async (
   throw lastError ?? new Error("Falha ao contactar a API");
 };
 
-const getAuthHeaders = (token?: string | null) =>
+const getAuthHeaders = (token?: string | null): Record<string, string> =>
   token ? { Authorization: `Bearer ${token}` } : {};
 
 const requestJson = async <T>(
@@ -88,7 +103,7 @@ const requestJson = async <T>(
   const requestHeaders: Record<string, string> = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...getAuthHeaders(token),
-    ...headers,
+    ...(headers ?? {}),
   };
 
   const response = await fetchWithFallback(path, {
@@ -134,20 +149,29 @@ const normalizeAuthSession = (payload: any) => {
 };
 
 const normalizeFeedPost = (raw: any) => {
-  const authorName = raw?.author?.name ?? raw?.authorName ?? raw?.author ?? "";
+  const authorValue = raw?.authorName ?? raw?.author ?? "";
+  const authorName =
+    raw?.author?.name ??
+    raw?.author?.fullName ??
+    raw?.author?.email ??
+    authorValue;
   const authorType =
     raw?.author?.role ?? raw?.authorType ?? raw?.role ?? "student";
   const createdAt = raw?.createdAt ?? raw?.created_at ?? raw?.time ?? "agora";
   return {
     id: String(raw?.id ?? raw?._id ?? Math.random()),
-    author: authorName || "Utilizador",
+    author: typeof authorName === "string" ? authorName : "Utilizador",
     authorType,
-    role: raw?.author?.title ?? raw?.roleTitle ?? raw?.headline ?? "",
+    role:
+      raw?.author?.title ??
+      raw?.roleTitle ??
+      raw?.headline ??
+      (typeof raw?.role === "string" ? raw.role : ""),
     time: typeof createdAt === "string" ? createdAt : "agora",
     category: raw?.category ?? "Progresso",
     audience: raw?.audience ?? "suggested",
     content: raw?.content ?? raw?.text ?? "",
-    imageUrl: raw?.imageUrl ?? raw?.image ?? undefined,
+    imageUrl: raw?.imageUrl ?? raw?.mediaUrl ?? raw?.image ?? undefined,
     imageAlt: raw?.imageAlt ?? raw?.image_alt ?? undefined,
     likes: raw?.likes ?? raw?.likesCount ?? 0,
     comments: raw?.comments ?? raw?.commentsCount ?? 0,

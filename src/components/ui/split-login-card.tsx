@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { mockUsers, useAuthStore } from "@/features/auth/store";
+import { AuthRole, useAuthStore } from "@/features/auth/store";
 import { api, apiMappers } from "@/lib/api";
 
 const loginSchema = z.object({
@@ -16,12 +16,12 @@ const loginSchema = z.object({
 
 type LoginInput = z.infer<typeof loginSchema>;
 
-const roleLabel: Record<(typeof mockUsers)[number]["role"], string> = {
-  student: "Estudante",
-  professor: "Professor",
-  company: "Empresa",
-  university: "Universidade",
-};
+// const roleLabel: Record<AuthRole, string> = {
+//   student: "Estudante",
+//   professor: "Professor",
+//   company: "Empresa",
+//   university: "Universidade",
+// };
 
 export default function SplitLoginCard() {
   const router = useRouter();
@@ -29,12 +29,11 @@ export default function SplitLoginCard() {
   const setToken = useAuthStore((state) => state.setToken);
   const {
     register,
-    setValue,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
 
-  const redirectByRole = (role: (typeof mockUsers)[number]["role"]) => {
+  const redirectByRole = (role: AuthRole) => {
     if (role === "company") {
       router.push("/empresa/dashboard");
       return;
@@ -46,11 +45,6 @@ export default function SplitLoginCard() {
     router.push("/feed");
   };
 
-  const loginAsUser = (user: (typeof mockUsers)[number]) => {
-    setSession(user);
-    redirectByRole(user.role);
-  };
-
   const onSubmit = async (data: LoginInput) => {
     try {
       const response = await api.auth.login(data);
@@ -59,18 +53,7 @@ export default function SplitLoginCard() {
       setToken(token ?? null);
       redirectByRole(session.role);
     } catch (error) {
-      const found = mockUsers.find(
-        (user) =>
-          user.email.toLowerCase() === data.email.toLowerCase() &&
-          user.password === data.password,
-      );
-
-      if (!found) {
-        alert("Credenciais inválidas. Usa uma conta de teste abaixo.");
-        return;
-      }
-
-      loginAsUser(found);
+      alert("Nao foi possivel autenticar. Verifica o servidor.");
     }
   };
 
@@ -159,6 +142,7 @@ export default function SplitLoginCard() {
             {isSubmitting ? "A entrar..." : "Entrar"}
           </button>
 
+          {/*
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
               Contas de teste
@@ -210,6 +194,7 @@ export default function SplitLoginCard() {
               ))}
             </div>
           </div>
+          */}
 
           <p className="pt-2 text-center text-sm text-muted">
             Ainda não tens conta?{" "}

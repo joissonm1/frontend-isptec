@@ -1,29 +1,82 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/features/auth/store";
+
 export function ComposerCard() {
+  const session = useAuthStore((state) => state.session);
+  const [content, setContent] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [visibility, setVisibility] = useState("PUBLIC");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!content.trim()) {
+      alert("Escreve algo para publicar.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.feed.createPost(
+        {
+          content: content.trim(),
+          mediaUrl: mediaUrl.trim() || undefined,
+          visibility,
+        },
+        session?.token ?? null,
+      );
+      setContent("");
+      setMediaUrl("");
+      setVisibility("PUBLIC");
+      window.dispatchEvent(new CustomEvent("feed:refresh"));
+    } catch (error) {
+      alert("Nao foi possivel publicar agora.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-slate-300" />
-        <button className="w-full rounded-full border border-slate-300 px-4 py-2 text-left text-sm text-slate-500 transition hover:bg-slate-50">
-          Publica teu progresso, notas, concursos ou conquistas
-        </button>
-      </div>
+      <form className="space-y-3" onSubmit={submit}>
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-slate-300" />
+          <textarea
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            className="w-full resize-none rounded-2xl border border-slate-300 px-4 py-2 text-sm outline-none transition focus:border-cyan-600"
+            placeholder="Publica teu progresso, notas, concursos ou conquistas"
+            rows={2}
+          />
+        </div>
+        <div className="grid gap-2 sm:grid-cols-[1fr_140px_120px]">
+          <input
+            value={mediaUrl}
+            onChange={(event) => setMediaUrl(event.target.value)}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            placeholder="URL da imagem (opcional)"
+          />
+          <select
+            value={visibility}
+            onChange={(event) => setVisibility(event.target.value)}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="PUBLIC">PUBLIC</option>
+            <option value="PRIVATE">PRIVATE</option>
+          </select>
+          <button
+            disabled={submitting}
+            className="rounded-lg bg-cyan-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {submitting ? "A publicar..." : "Publicar"}
+          </button>
+        </div>
+      </form>
       <div className="mt-2 text-xs text-slate-500">
         Dica: podes publicar apenas texto ou texto com foto.
-      </div>
-      <div className="mt-4 grid grid-cols-4 gap-2 text-sm font-medium text-slate-600">
-        <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
-          Progresso
-        </button>
-        <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
-          Notas
-        </button>
-        <label className="cursor-pointer rounded-lg bg-slate-50 py-2 text-center transition hover:bg-slate-100">
-          Foto
-          <input type="file" accept="image/*" className="hidden" />
-        </label>
-        <button className="rounded-lg bg-slate-50 py-2 transition hover:bg-slate-100">
-          Concurso
-        </button>
       </div>
     </section>
   );

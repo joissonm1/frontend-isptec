@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ComposerCard } from "@/components/dashboard/ComposerCard";
 import { PostCard } from "@/components/dashboard/PostCard";
-import { feedPosts } from "@/lib/mock-data";
+import type { FeedPost } from "@/lib/mock-data";
 import { api, apiMappers } from "@/lib/api";
 import { useAuthStore } from "@/features/auth/store";
 
 export default function FeedPage() {
   const [scope, setScope] = useState<"all" | "friends" | "suggested">("all");
-  const [posts, setPosts] = useState(feedPosts);
+  const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const session = useAuthStore((state) => state.session);
 
@@ -20,16 +20,15 @@ export default function FeedPage() {
     const load = async () => {
       try {
         const response = await api.feed.global(session?.token ?? null);
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
         const normalized = data.map(apiMappers.normalizeFeedPost);
         if (isMounted) {
-          setPosts(normalized.length ? normalized : feedPosts);
+          setPosts(normalized);
         }
       } catch (error) {
         if (isMounted) {
-          setPosts(feedPosts);
+          setPosts([]);
         }
       } finally {
         if (isMounted) {
@@ -39,7 +38,10 @@ export default function FeedPage() {
     };
 
     load();
+    const handler = () => load();
+    window.addEventListener("feed:refresh", handler);
     return () => {
+      window.removeEventListener("feed:refresh", handler);
       isMounted = false;
     };
   }, [session?.token]);
@@ -85,8 +87,12 @@ export default function FeedPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
           A carregar feed...
         </div>
-      ) : (
+      ) : visiblePosts.length > 0 ? (
         visiblePosts.map((post) => <PostCard key={post.id} post={post} />)
+      ) : (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
+          Nenhuma publicacao encontrada.
+        </div>
       )}
     </AppShell>
   );

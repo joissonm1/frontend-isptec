@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
-import { offers } from "@/lib/mock-data";
+import type { Offer } from "@/lib/mock-data";
 import { api, apiMappers } from "@/lib/api";
 import { useAuthStore } from "@/features/auth/store";
 
 export default function EmpresaOfertasPage() {
-  const [items, setItems] = useState(offers);
+  const [items, setItems] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const session = useAuthStore((state) => state.session);
 
@@ -18,16 +18,15 @@ export default function EmpresaOfertasPage() {
     const load = async () => {
       try {
         const response = await api.companies.jobs.list(session?.token ?? null);
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
         const normalized = data.map(apiMappers.normalizeOffer);
         if (isMounted) {
-          setItems(normalized.length ? normalized : offers);
+          setItems(normalized);
         }
       } catch (error) {
         if (isMounted) {
-          setItems(offers);
+          setItems([]);
         }
       } finally {
         if (isMounted) {
@@ -61,7 +60,7 @@ export default function EmpresaOfertasPage() {
             <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
               A carregar vagas da empresa...
             </div>
-          ) : (
+          ) : items.length > 0 ? (
             items.map((offer) => (
               <article
                 key={offer.id}
@@ -77,6 +76,10 @@ export default function EmpresaOfertasPage() {
                 </Link>
               </article>
             ))
+          ) : (
+            <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
+              Nenhuma vaga encontrada.
+            </div>
           )}
         </div>
       </section>

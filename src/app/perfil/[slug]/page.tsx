@@ -8,53 +8,60 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { StudentProgressSection } from "@/components/profile/StudentProgressSection";
 import { api, apiMappers } from "@/lib/api";
 import { useAuthStore } from "@/features/auth/store";
 
 type PerfilPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
-const skills = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "NestJS",
-  "SQL",
-  "Comunicação",
-  "Liderança",
-];
+// const skills = [
+//   "React",
+//   "Next.js",
+//   "TypeScript",
+//   "NestJS",
+//   "SQL",
+//   "Comunicação",
+//   "Liderança",
+// ];
 
-const experiences = [
-  {
-    title: "Frontend Intern",
-    company: "BlueOrbit Labs",
-    period: "2025 - Atual",
-    description:
-      "Desenvolvimento de interfaces em Next.js e Tailwind, melhoria de performance e colaboração com equipa de produto.",
-  },
-  {
-    title: "Monitor Académico",
-    company: "ISPTEC",
-    period: "2024 - 2025",
-    description:
-      "Apoio em disciplinas de programação e orientação prática para projetos de estudantes iniciantes.",
-  },
-];
+// const experiences = [
+//   {
+//     title: "Frontend Intern",
+//     company: "BlueOrbit Labs",
+//     period: "2025 - Atual",
+//     description:
+//       "Desenvolvimento de interfaces em Next.js e Tailwind, melhoria de performance e colaboração com equipa de produto.",
+//   },
+//   {
+//     title: "Monitor Académico",
+//     company: "ISPTEC",
+//     period: "2024 - 2025",
+//     description:
+//       "Apoio em disciplinas de programação e orientação prática para projetos de estudantes iniciantes.",
+//   },
+// ];
 
 export default function PerfilPage({ params }: PerfilPageProps) {
-  const { slug } = params;
+  const { slug } = use(params);
   const session = useAuthStore((state) => state.session);
   const [profileName, setProfileName] = useState("");
   const [profileRole, setProfileRole] = useState<
     "student" | "professor" | "company" | "university"
   >("student");
   const [profileId, setProfileId] = useState<string | null>(null);
-  const [skillsList, setSkillsList] = useState(skills);
-  const [experienceList, setExperienceList] = useState(experiences);
+  const [skillsList, setSkillsList] = useState<string[]>([]);
+  const [experienceList, setExperienceList] = useState<
+    Array<{
+      title: string;
+      company: string;
+      period: string;
+      description: string;
+    }>
+  >([]);
   const [loading, setLoading] = useState(true);
 
   const displayName = useMemo(() => {
@@ -73,16 +80,22 @@ export default function PerfilPage({ params }: PerfilPageProps) {
     const load = async () => {
       try {
         const response = await api.students.list(session?.token ?? null);
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
-        const normalized = data.map(apiMappers.normalizeStudentProfile);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
+        const normalized = data.map(
+          apiMappers.normalizeStudentProfile,
+        ) as Array<{
+          slug: string;
+          id?: string | null;
+          name: string;
+          skills?: string[];
+        }>;
         const found = normalized.find((student) => student.slug === slug);
         if (found && active) {
           setProfileName(found.name);
           setProfileRole("student");
           setProfileId(found.id ?? null);
-          setSkillsList(found.skills?.length ? found.skills : skills);
+          setSkillsList(found.skills ?? []);
         }
 
         if (found?.id) {
@@ -91,10 +104,10 @@ export default function PerfilPage({ params }: PerfilPageProps) {
               found.id,
               session?.token ?? null,
             );
-            const profileData =
-              profileResponse.data?.data ?? profileResponse.data;
-            if (profileData?.experiences && active) {
-              setExperienceList(profileData.experiences);
+            const profilePayload = profileResponse.data as any;
+            const profileData = profilePayload?.data ?? profilePayload;
+            if (active) {
+              setExperienceList(profileData?.experiences ?? []);
             }
           } catch (error) {
             // Mantem fallback local.

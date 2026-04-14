@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { OfferApplyDrawer } from "@/components/offers/OfferApplyDrawer";
 import { OfferDetails } from "@/components/offers/OfferDetails";
-import { offers } from "@/lib/mock-data";
+// import { offers } from "@/lib/mock-data";
 import { api, apiMappers } from "@/lib/api";
 
 type OfertaDetalhePageProps = {
@@ -13,14 +13,14 @@ export default async function OfertaDetalhePage({
   params,
 }: OfertaDetalhePageProps) {
   const { id } = await params;
-  let offer = offers.find((item) => item.id === id);
+  let offer = null;
 
   try {
     const response = await api.jobs.get(id);
     const normalized = apiMappers.normalizeOffer(response.data);
-    offer = normalized.id ? normalized : offer;
+    offer = normalized.id ? normalized : null;
   } catch (error) {
-    // Mantem fallback local caso a API falhe.
+    // Sem fallback mock.
   }
 
   if (!offer) {

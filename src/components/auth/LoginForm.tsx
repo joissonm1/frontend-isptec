@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { mockUsers, useAuthStore } from "@/features/auth/store";
+import { AuthRole, useAuthStore } from "@/features/auth/store";
 import { api, apiMappers } from "@/lib/api";
 
 const loginSchema = z.object({
@@ -15,12 +15,12 @@ const loginSchema = z.object({
 
 type LoginInput = z.infer<typeof loginSchema>;
 
-const roleLabel: Record<(typeof mockUsers)[number]["role"], string> = {
-  student: "Estudante",
-  professor: "Professor",
-  company: "Empresa",
-  university: "Universidade",
-};
+// const roleLabel: Record<AuthRole, string> = {
+//   student: "Estudante",
+//   professor: "Professor",
+//   company: "Empresa",
+//   university: "Universidade",
+// };
 
 export function LoginForm() {
   const router = useRouter();
@@ -28,12 +28,11 @@ export function LoginForm() {
   const setToken = useAuthStore((state) => state.setToken);
   const {
     register,
-    setValue,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
 
-  const redirectByRole = (role: (typeof mockUsers)[number]["role"]) => {
+  const redirectByRole = (role: AuthRole) => {
     if (role === "company") {
       router.push("/empresa/dashboard");
       return;
@@ -54,25 +53,8 @@ export function LoginForm() {
       setToken(token ?? null);
       redirectByRole(session.role);
     } catch (error) {
-      const found = mockUsers.find(
-        (user) =>
-          user.email.toLowerCase() === data.email.toLowerCase() &&
-          user.password === data.password,
-      );
-
-      if (!found) {
-        alert("Credenciais inválidas. Usa uma conta demo abaixo.");
-        return;
-      }
-
-      setSession(found);
-      redirectByRole(found.role);
+      alert("Nao foi possivel autenticar. Verifica o servidor.");
     }
-  };
-
-  const loginAsMockUser = (user: (typeof mockUsers)[number]) => {
-    setSession(user);
-    redirectByRole(user.role);
   };
 
   return (
@@ -113,6 +95,7 @@ export function LoginForm() {
         {isSubmitting ? "A entrar..." : "Entrar"}
       </button>
 
+      {/*
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
         <p className="text-xs font-bold uppercase tracking-wide text-slate-600">
           Contas demo
@@ -158,6 +141,7 @@ export function LoginForm() {
           ))}
         </div>
       </div>
+      */}
 
       <p className="text-center text-sm text-slate-600">
         Ainda não tens conta?{" "}

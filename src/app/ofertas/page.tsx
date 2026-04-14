@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OfferCard } from "@/components/offers/OfferCard";
 import { OffersFilters } from "@/components/offers/OffersFilters";
-import { offers } from "@/lib/mock-data";
+import type { Offer } from "@/lib/mock-data";
 import { api, apiMappers } from "@/lib/api";
 
 export default function OfertasPage() {
   const [search, setSearch] = useState("");
   const [contract, setContract] = useState("all");
-  const [items, setItems] = useState(offers);
+  const [items, setItems] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,16 +19,15 @@ export default function OfertasPage() {
     const load = async () => {
       try {
         const response = await api.jobs.list();
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
         const normalized = data.map(apiMappers.normalizeOffer);
         if (isMounted) {
-          setItems(normalized.length ? normalized : offers);
+          setItems(normalized);
         }
       } catch (error) {
         if (isMounted) {
-          setItems(offers);
+          setItems([]);
         }
       } finally {
         if (isMounted) {

@@ -112,7 +112,7 @@ export function Sidebar() {
         ...companyExtraLinks,
         ...professorExtraLinks,
         ...baseLinks,
-      ]
+      ].filter(Boolean)
     : baseLinks;
 
   return <SidebarWithSubmenu items={links} footerItems={footerLinks} compact />;

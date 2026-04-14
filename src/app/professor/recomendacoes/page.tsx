@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
-import { suggestedStudentProfiles } from "@/lib/mock-data";
+import type { SuggestedStudentProfile } from "@/lib/mock-data";
 import { api, apiMappers } from "@/lib/api";
 import { useAuthStore } from "@/features/auth/store";
 
@@ -15,7 +15,7 @@ const companies = [
 ];
 
 export default function ProfessorRecomendacoesPage() {
-  const [students, setStudents] = useState(suggestedStudentProfiles);
+  const [students, setStudents] = useState<SuggestedStudentProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const session = useAuthStore((state) => state.session);
 
@@ -25,18 +25,15 @@ export default function ProfessorRecomendacoesPage() {
     const load = async () => {
       try {
         const response = await api.students.list(session?.token ?? null);
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
         const normalized = data.map(apiMappers.normalizeStudentProfile);
         if (active) {
-          setStudents(
-            normalized.length ? normalized : suggestedStudentProfiles,
-          );
+          setStudents(normalized);
         }
       } catch (error) {
         if (active) {
-          setStudents(suggestedStudentProfiles);
+          setStudents([]);
         }
       } finally {
         if (active) {

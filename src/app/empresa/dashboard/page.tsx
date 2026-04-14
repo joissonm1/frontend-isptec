@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { PostCard } from "@/components/dashboard/PostCard";
-import { feedPosts, suggestedStudentProfiles } from "@/lib/mock-data";
+import type { FeedPost, SuggestedStudentProfile } from "@/lib/mock-data";
 import { api, apiMappers } from "@/lib/api";
 import { useAuthStore } from "@/features/auth/store";
 
 export default function EmpresaDashboardPage() {
-  const [posts, setPosts] = useState(feedPosts);
-  const [students, setStudents] = useState(suggestedStudentProfiles);
+  const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [students, setStudents] = useState<SuggestedStudentProfile[]>([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const session = useAuthStore((state) => state.session);
@@ -26,16 +26,15 @@ export default function EmpresaDashboardPage() {
     const loadFeed = async () => {
       try {
         const response = await api.feed.global(session?.token ?? null);
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
         const normalized = data.map(apiMappers.normalizeFeedPost);
         if (active) {
-          setPosts(normalized.length ? normalized : feedPosts);
+          setPosts(normalized);
         }
       } catch (error) {
         if (active) {
-          setPosts(feedPosts);
+          setPosts([]);
         }
       } finally {
         if (active) {
@@ -56,18 +55,15 @@ export default function EmpresaDashboardPage() {
     const loadStudents = async () => {
       try {
         const response = await api.students.list(session?.token ?? null);
-        const data = Array.isArray(response.data)
-          ? response.data
-          : (response.data?.data ?? []);
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
         const normalized = data.map(apiMappers.normalizeStudentProfile);
         if (active) {
-          setStudents(
-            normalized.length ? normalized : suggestedStudentProfiles,
-          );
+          setStudents(normalized);
         }
       } catch (error) {
         if (active) {
-          setStudents(suggestedStudentProfiles);
+          setStudents([]);
         }
       } finally {
         if (active) {
@@ -131,8 +127,12 @@ export default function EmpresaDashboardPage() {
             <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
               A carregar feed de estudantes...
             </div>
-          ) : (
+          ) : studentFeed.length > 0 ? (
             studentFeed.map((post) => <PostCard key={post.id} post={post} />)
+          ) : (
+            <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
+              Nenhuma publicacao encontrada.
+            </div>
           )}
         </div>
       </section>
@@ -146,7 +146,7 @@ export default function EmpresaDashboardPage() {
             <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
               A carregar talentos...
             </div>
-          ) : (
+          ) : students.length > 0 ? (
             students.slice(0, 2).map((student) => (
               <article
                 key={student.slug}
@@ -162,6 +162,10 @@ export default function EmpresaDashboardPage() {
                 </Link>
               </article>
             ))
+          ) : (
+            <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
+              Nenhum talento encontrado.
+            </div>
           )}
         </div>
       </section>

@@ -18,6 +18,16 @@ export default function EditarOfertaPage({ params }: EditarOfertaPageProps) {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [applications, setApplications] = useState<
+    Array<{
+      id: string;
+      jobId: string;
+      studentId?: string;
+      status: string;
+      createdAt?: string;
+    }>
+  >([]);
+  const [loadingApplications, setLoadingApplications] = useState(true);
   const session = useAuthStore((state) => state.session);
 
   useEffect(() => {
@@ -47,10 +57,33 @@ export default function EditarOfertaPage({ params }: EditarOfertaPageProps) {
     };
 
     load();
+    const loadApplications = async () => {
+      try {
+        const response = await api.jobs.applicationsByJob(
+          params.id,
+          session?.token ?? null,
+        );
+        const payload = response.data as any;
+        const data = Array.isArray(payload) ? payload : (payload?.data ?? []);
+        if (active) {
+          setApplications(data);
+        }
+      } catch (error) {
+        if (active) {
+          setApplications([]);
+        }
+      } finally {
+        if (active) {
+          setLoadingApplications(false);
+        }
+      }
+    };
+
+    loadApplications();
     return () => {
       active = false;
     };
-  }, [params]);
+  }, [params, session?.token]);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -164,6 +197,97 @@ export default function EditarOfertaPage({ params }: EditarOfertaPageProps) {
             </div>
           </form>
         )}
+      </section>
+
+      <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6">
+        <h2 className="text-2xl font-black text-slate-900">Candidaturas</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Aprovar ou rejeitar candidatos desta vaga.
+        </p>
+        <div className="mt-4 space-y-3">
+          {loadingApplications ? (
+            <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
+              A carregar candidaturas...
+            </div>
+          ) : applications.length > 0 ? (
+            applications.map((application) => (
+              <article
+                key={application.id}
+                className="rounded-xl border border-slate-200 p-4"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">
+                      Candidatura #{application.id}
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      Status: {application.status}
+                    </p>
+                    {application.studentId && (
+                      <p className="text-xs text-slate-500">
+                        Estudante: {application.studentId}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                      disabled={application.status === "ACCEPTED"}
+                      onClick={async () => {
+                        try {
+                          await api.jobs.acceptApplication(
+                            application.id,
+                            session?.token ?? null,
+                          );
+                          setApplications((prev) =>
+                            prev.map((item) =>
+                              item.id === application.id
+                                ? { ...item, status: "ACCEPTED" }
+                                : item,
+                            ),
+                          );
+                        } catch (error) {
+                          alert("Nao foi possivel aceitar a candidatura.");
+                        }
+                      }}
+                    >
+                      Aceitar
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                      disabled={application.status === "REJECTED"}
+                      onClick={async () => {
+                        try {
+                          await api.jobs.rejectApplication(
+                            application.id,
+                            session?.token ?? null,
+                          );
+                          setApplications((prev) =>
+                            prev.map((item) =>
+                              item.id === application.id
+                                ? { ...item, status: "REJECTED" }
+                                : item,
+                            ),
+                          );
+                        } catch (error) {
+                          alert("Nao foi possivel rejeitar a candidatura.");
+                        }
+                      }}
+                    >
+                      Rejeitar
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">
+              Nenhuma candidatura encontrada.
+            </div>
+          )}
+        </div>
       </section>
     </AppShell>
   );
