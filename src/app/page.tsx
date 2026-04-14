@@ -49,18 +49,18 @@ export default function Home() {
         <ViabilitySection />
         <CTASection />
         <section className="flex items-center justify-center">
-          <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-xs text-slate-500 shadow-sm">
+          <div className="flex items-center gap-5 rounded-2xl border border-slate-200 bg-white/80 px-5 py-4 text-xs text-slate-500 shadow-sm">
             <div className="text-right">
               <p className="font-semibold text-slate-600">Acede rapido</p>
               <p>Le o QR para conhecer a plataforma.</p>
             </div>
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-2">
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-3">
               <Image
                 src="/unibridge_qr_centro.png"
                 alt="QR code UniBridge"
-                width={120}
-                height={120}
-                className="h-24 w-24 object-contain"
+                width={176}
+                height={176}
+                className="h-36 w-36 object-contain"
               />
             </div>
           </div>
