@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { useEffect } from "react";
+import { Moon } from "lucide-react";
 
 type Theme = "light" | "dark";
 
@@ -20,36 +20,30 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
-    const stored = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
-    return stored ?? getSystemTheme();
-  });
-  const isDark = theme === "dark";
-
-  const label = useMemo(
-    () => (isDark ? "Mudar para tema claro" : "Mudar para tema escuro"),
-    [isDark]
-  );
+  const label = "Alternar tema";
 
   useEffect(() => {
-  applyTheme(theme);
+    const stored = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
+    const initial = stored ?? getSystemTheme();
+    applyTheme(initial);
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  const onChange = () => {
+    const onChange = () => {
       const hasStored = window.localStorage.getItem(STORAGE_KEY);
       if (hasStored) return;
       const next = mq.matches ? "dark" : "light";
-      setTheme(next);
+      applyTheme(next);
     };
 
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
-  }, [theme]);
+  }, []);
 
   const toggle = () => {
+    const current =
+      document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+    const isDark = current === "dark";
     const next: Theme = isDark ? "light" : "dark";
-    setTheme(next);
     window.localStorage.setItem(STORAGE_KEY, next);
     applyTheme(next);
   };
@@ -64,11 +58,7 @@ export function ThemeToggle() {
     >
       <span className="ui-switch__track" aria-hidden="true">
         <span className="ui-switch__thumb" aria-hidden="true">
-          {isDark ? (
-            <Moon className="ui-switch__icon" />
-          ) : (
-            <Sun className="ui-switch__icon" />
-          )}
+          <Moon className="ui-switch__icon" />
         </span>
       </span>
       <span className="sr-only">{label}</span>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FeedPost } from "@/lib/mock-data";
 
 type PostCardProps = {
@@ -35,9 +36,12 @@ export function PostCard({ post }: PostCardProps) {
       </p>
       {post.imageUrl && (
         <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
-          <img
+          <Image
             src={post.imageUrl}
             alt={post.imageAlt ?? "Imagem da publicação"}
+            width={1200}
+            height={600}
+            unoptimized
             className="h-64 w-full object-cover"
           />
         </div>
