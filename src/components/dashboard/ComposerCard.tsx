@@ -1,11 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { api } from "@/lib/api";
+import { getProfileVisual } from "@/lib/profile-visuals";
 import { useAuthStore } from "@/features/auth/store";
 
 export function ComposerCard() {
   const session = useAuthStore((state) => state.session);
+  const visual = getProfileVisual(session?.profileSlug, session?.role);
   const [content, setContent] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [visibility, setVisibility] = useState("PUBLIC");
@@ -43,7 +46,16 @@ export function ComposerCard() {
     <section className="rounded-2xl border border-slate-200 bg-white p-4">
       <form className="space-y-3" onSubmit={submit}>
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-slate-300" />
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+            <Image
+              src={visual.avatarUrl}
+              alt={`Avatar de ${session?.name ?? "utilizador"}`}
+              width={40}
+              height={40}
+              unoptimized
+              className="h-full w-full object-cover"
+            />
+          </div>
           <textarea
             value={content}
             onChange={(event) => setContent(event.target.value)}

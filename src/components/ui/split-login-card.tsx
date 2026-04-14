@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -60,23 +59,22 @@ export default function SplitLoginCard() {
   return (
     <div className="ui-card mx-auto flex w-full max-w-4xl flex-col overflow-hidden border md:min-h-[640px] md:flex-row">
       {/* Left Side: Welcome + Illustration */}
-      <div className="flex flex-col items-center justify-center bg-primary p-16 text-white md:w-1/2">
+      <div
+        className="relative flex flex-col items-center justify-center overflow-hidden bg-primary p-16 text-white md:w-1/2"
+        style={{
+          backgroundImage:
+            "linear-gradient(120deg, rgba(8, 106, 130, 0.92), rgba(6, 62, 88, 0.82)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <h2 className="text-3xl font-black">Bem-vindo de volta!</h2>
         <p className="mt-3 max-w-sm text-center text-white/90">
           Entra para aceder ao teu dashboard e acompanhar oportunidades em tempo
           real.
         </p>
 
-        <div className="mt-6 grid place-items-center rounded-2xl bg-white/15 p-4 ring-1 ring-white/20">
-          <Image
-            src="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=240&q=80"
-            alt="Ilustração de login"
-            width={96}
-            height={96}
-            unoptimized
-            className="h-24 w-24 rounded-xl object-cover"
-          />
-        </div>
+        <div className="mt-6 h-24" />
       </div>
 
       {/* Right Side: Login Form */}

@@ -35,10 +35,10 @@ export default async function OfertaDetalhePage({
       >
         ← Voltar para ofertas
       </Link>
-      <OfferDetails offer={offer} />
-      <div className="flex justify-end">
-        <OfferApplyDrawer jobId={offer.id} />
-      </div>
+      <OfferDetails
+        offer={offer}
+        cta={<OfferApplyDrawer jobId={offer.id} className="w-full" />}
+      />
     </div>
   );
 }

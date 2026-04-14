@@ -163,7 +163,7 @@ export function HeroSection() {
                 <div className="ui-card relative mx-auto max-w-6xl overflow-hidden rounded-3xl border p-4 ring-1 ring-background/40">
                   <img
                     className="relative z-2 aspect-15/8 rounded-2xl border border-border/25"
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2400&q=80"
+                    src="/unibridge.png"
                     alt="app screen"
                     width="2400"
                     height="1280"

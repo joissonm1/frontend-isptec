@@ -18,33 +18,6 @@ type PerfilPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-// const skills = [
-//   "React",
-//   "Next.js",
-//   "TypeScript",
-//   "NestJS",
-//   "SQL",
-//   "Comunicação",
-//   "Liderança",
-// ];
-
-// const experiences = [
-//   {
-//     title: "Frontend Intern",
-//     company: "BlueOrbit Labs",
-//     period: "2025 - Atual",
-//     description:
-//       "Desenvolvimento de interfaces em Next.js e Tailwind, melhoria de performance e colaboração com equipa de produto.",
-//   },
-//   {
-//     title: "Monitor Académico",
-//     company: "ISPTEC",
-//     period: "2024 - 2025",
-//     description:
-//       "Apoio em disciplinas de programação e orientação prática para projetos de estudantes iniciantes.",
-//   },
-// ];
-
 export default function PerfilPage({ params }: PerfilPageProps) {
   const { slug } = use(params);
   const session = useAuthStore((state) => state.session);
@@ -110,11 +83,11 @@ export default function PerfilPage({ params }: PerfilPageProps) {
               setExperienceList(profileData?.experiences ?? []);
             }
           } catch (error) {
-            // Mantem fallback local.
+            // Mantem vazio se falhar.
           }
         }
       } catch (error) {
-        // Mantem fallback local.
+        // Mantem vazio se falhar.
       } finally {
         if (active) {
           setLoading(false);

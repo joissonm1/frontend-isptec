@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 import {
@@ -14,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function AuthPage() {
+  const router = useRouter();
+
   return (
     <main className="relative lg:grid lg:min-h-[calc(100vh-64px)] lg:grid-cols-2">
       {/* Left panel */}
@@ -42,11 +45,13 @@ export function AuthPage() {
           <div className="absolute -right-16 top-16 h-96 w-56 -translate-y-24 rounded-full bg-[radial-gradient(circle_at_30%_30%,color-mix(in_srgb,var(--color-text)_10%,transparent),transparent_70%)]" />
         </div>
 
-        <Button variant="ghost" className="absolute left-5 top-7" asChild>
-          <a href="/">
-            <ChevronLeftIcon className="me-2 size-4" />
-            Início
-          </a>
+        <Button
+          variant="ghost"
+          className="absolute left-4 top-4 h-9 w-9 rounded-full border border-border/70"
+          onClick={() => router.back()}
+          aria-label="Voltar"
+        >
+          <ChevronLeftIcon className="size-4" />
         </Button>
 
         <div className="mx-auto w-full max-w-sm space-y-4">

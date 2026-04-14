@@ -17,6 +17,7 @@ export function PostCard({ post }: PostCardProps) {
   const [submitting, setSubmitting] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [comments, setComments] = useState(post.comments);
+
   const roleLabel = {
     student: "Aluno",
     professor: "Professor",

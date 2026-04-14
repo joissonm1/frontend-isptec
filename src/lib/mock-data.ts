@@ -15,6 +15,14 @@ export type FeedPost = {
   imageAlt?: string;
   likes: number;
   comments: number;
+  commentsList: FeedComment[];
+};
+
+export type FeedComment = {
+  id: string;
+  author: string;
+  time: string;
+  message: string;
 };
 
 export type Offer = {
@@ -40,6 +48,23 @@ export type SuggestedStudentProfile = {
   lastUpdate: string;
 };
 
+export type OfferApplicantStatus =
+  | "Nova"
+  | "Em análise"
+  | "Entrevista"
+  | "Rejeitada";
+
+export type OfferApplicant = {
+  id: string;
+  name: string;
+  course: string;
+  university: string;
+  offerTitle: string;
+  appliedAt: string;
+  status: OfferApplicantStatus;
+  profileSlug: string;
+};
+
 export const impactStats = [
   { label: "Estudantes conectados", value: 4200, suffix: "+" },
   { label: "Empresas parceiras", value: 180, suffix: "+" },
@@ -57,12 +82,26 @@ export const feedPosts: FeedPost[] = [
     category: "Conquista",
     audience: "friends",
     content:
-      "Concluí o projeto de análise de dados da universidade e apresentei para duas empresas parceiras.",
+      "Concluí o projeto de análise de dados da universidade e apresentei para duas empresas.",
     imageUrl:
       "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
     imageAlt: "Estudantes apresentando projeto em laboratório",
     likes: 82,
-    comments: 14,
+    comments: 2,
+    commentsList: [
+      {
+        id: "1-1",
+        author: "Marta Silva",
+        time: "há 50 min",
+        message: "Parabens! Excelente conquista.",
+      },
+      {
+        id: "1-2",
+        author: "Prof. Ana Gomes",
+        time: "há 40 min",
+        message: "Orgulho do teu progresso. Continua assim.",
+      },
+    ],
   },
   {
     id: "2",
@@ -78,7 +117,21 @@ export const feedPosts: FeedPost[] = [
       "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
     imageAlt: "Equipa profissional em reunião",
     likes: 49,
-    comments: 8,
+    comments: 2,
+    commentsList: [
+      {
+        id: "2-1",
+        author: "Joisson Miguel",
+        time: "há 3 h",
+        message: "Como posso candidatar-me a estas vagas?",
+      },
+      {
+        id: "2-2",
+        author: "Marta Silva",
+        time: "há 2 h",
+        message: "Vem ao feed de vagas e seleciona a oferta desejada.",
+      },
+    ],
   },
   {
     id: "3",
@@ -91,7 +144,15 @@ export const feedPosts: FeedPost[] = [
     content:
       "Resultados da 1a fase de avaliações já disponíveis no portal. Consulta o calendário de revisões e apoio pedagógico.",
     likes: 31,
-    comments: 5,
+    comments: 1,
+    commentsList: [
+      {
+        id: "3-1",
+        author: "Carlos Mateus",
+        time: "há 5 h",
+        message: "Obrigado pela partilha. Vou consultar hoje.",
+      },
+    ],
   },
   {
     id: "4",
@@ -104,7 +165,21 @@ export const feedPosts: FeedPost[] = [
     content:
       "Parabéns aos estudantes que apresentaram protótipos com excelente qualidade técnica. Continuem a publicar as evoluções no vosso perfil UniBridge.",
     likes: 64,
-    comments: 12,
+    comments: 2,
+    commentsList: [
+      {
+        id: "4-1",
+        author: "Joisson Miguel",
+        time: "há 7 h",
+        message: "Obrigado, professora!",
+      },
+      {
+        id: "4-2",
+        author: "Ana Paula Fernandes",
+        time: "há 6 h",
+        message: "Foi uma experiencia incrivel.",
+      },
+    ],
   },
 ];
 
@@ -187,5 +262,48 @@ export const suggestedStudentProfiles: SuggestedStudentProfile[] = [
     skills: ["Redes", "Linux", "Cloud"],
     progressScore: 74,
     lastUpdate: "Partilhou certificação de redes",
+  },
+];
+
+export const offerApplicants: OfferApplicant[] = [
+  {
+    id: "cand-1",
+    name: "Joisson Miguel",
+    course: "Engenharia Informática",
+    university: "ISPTEC",
+    offerTitle: "Frontend Intern",
+    appliedAt: "12 Abr, 2026",
+    status: "Em análise",
+    profileSlug: "joisson-miguel",
+  },
+  {
+    id: "cand-2",
+    name: "Ana Paula Fernandes",
+    course: "Ciência de Dados",
+    university: "Universidade Agostinho Neto",
+    offerTitle: "Data Analyst Intern",
+    appliedAt: "11 Abr, 2026",
+    status: "Nova",
+    profileSlug: "ana-paula-fernandes",
+  },
+  {
+    id: "cand-3",
+    name: "Carlos Mateus",
+    course: "Engenharia de Telecomunicações",
+    university: "ISPTEC",
+    offerTitle: "Social Media Intern",
+    appliedAt: "10 Abr, 2026",
+    status: "Entrevista",
+    profileSlug: "carlos-mateus",
+  },
+  {
+    id: "cand-4",
+    name: "Marta Silva",
+    course: "Marketing Digital",
+    university: "Universidade de Luanda",
+    offerTitle: "Social Media Intern",
+    appliedAt: "08 Abr, 2026",
+    status: "Rejeitada",
+    profileSlug: "ana-paula-fernandes",
   },
 ];
