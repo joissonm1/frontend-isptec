@@ -27,12 +27,12 @@ export function ProblemSolution() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ delay: index * 0.08, duration: 0.4 }}
-          className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+          className="ui-card border border-slate-200 bg-white p-6 shadow-sm"
         >
-          <h3 className="text-lg font-extrabold text-slate-900">
+          <h3 className="ui-text-title text-lg font-extrabold leading-tight">
             {card.title}
           </h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          <p className="ui-text-muted mt-2 text-sm leading-relaxed text-slate-600">
             {card.text}
           </p>
         </motion.article>

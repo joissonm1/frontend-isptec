@@ -5,11 +5,11 @@ import { impactStats } from "@/lib/mock-data";
 
 export function ImpactStats() {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
-      <h2 className="text-2xl font-black text-slate-900 sm:text-3xl">
+    <section className="ui-card p-6 sm:p-8">
+      <h2 className="ui-text-title text-2xl font-black sm:text-3xl">
         Impacto social mensurável
       </h2>
-      <p className="mt-2 max-w-3xl text-slate-600">
+      <p className="mt-2 max-w-3xl ui-text-muted">
         A plataforma reduz a distância entre teoria e prática, aumenta
         oportunidades de estágio e acelera a entrada no mercado.
       </p>
